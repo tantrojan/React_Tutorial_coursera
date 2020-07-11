@@ -11,6 +11,8 @@ import {
   fetchDishes,
   fetchComments,
   fetchPromos,
+  fetchLeaders,
+  postFeedback
 } from "../redux/ActionCreators";
 import { actions } from "react-redux-form";
 import { Switch, Route, Redirect, withRouter } from "react-router-dom";
@@ -30,9 +32,11 @@ const mapDispatchToProps = (dispatch) => {
   return {
     postComment: (dishId, rating, author, comment) =>
       dispatch(postComment(dishId, rating, author, comment)),
+    postFeedback: (values) => dispatch(postFeedback(values)),
     fetchDishes: () => dispatch(fetchDishes()),
     fetchComments: () => dispatch(fetchComments()),
     fetchPromos: () => dispatch(fetchPromos()),
+    fetchLeaders: () => dispatch(fetchLeaders()),
     resetFeedbackForm: () => dispatch(actions.reset("feedback")),
   };
 };
@@ -46,6 +50,7 @@ class Main extends Component {
     this.props.fetchDishes();
     this.props.fetchComments();
     this.props.fetchPromos();
+    this.props.fetchLeaders();
   }
 
   render() {
@@ -62,7 +67,9 @@ class Main extends Component {
           }
           promosLoading={this.props.promotions.isLoading}
           promosErrMess={this.props.promotions.errMess}
-          leader={this.props.leaders.filter((leader) => leader.featured)[0]}
+          leader={this.props.leaders.leaders.filter((leader) => leader.featured)[0]}
+          leadersLoading={this.props.leaders.isLoading}
+          leadersErrMess={this.props.leaders.errMess}
         />
       );
     };
@@ -107,12 +114,12 @@ class Main extends Component {
                 exact
                 path="/contactus"
                 component={() => (
-                  <Contact resetFeedbackForm={this.props.resetFeedbackForm} />
+                  <Contact resetFeedbackForm={this.props.resetFeedbackForm} postFeedback={this.props.postFeedback} />
                 )}
               />
               <Route
                 path="/aboutus"
-                component={() => <About leaders={this.props.leaders} />}
+                component={() => <About leaders={this.props.leaders.leaders} />}
               />
               <Redirect to="/home" />
             </Switch>
